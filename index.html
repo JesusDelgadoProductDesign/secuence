@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secuence – Porque la salud no termina en la consulta</title>
+  <link rel="icon" type="image/png" href="assets/secuence_fav-icon-01.png" />
+  <script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","vu9zpsczyr");</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { geist: ['Geist', 'sans-serif'] },
+          colors: {
+            brand:          '#75439b',
+            'brand-dark':   '#6e368c',
+            'brand-pink':   '#e1007e',
+            surface:        '#fcfcfc',
+            'surface-brand':'#f3f5ff',
+          },
+          letterSpacing: { tight3: '-0.03em' },
+        }
+      }
+    }
+  </script>
+  <style>
+    *, body { font-family: 'Geist', sans-serif; }
+
+    /* ── Button ── */
+    .btn-brand {
+      background: linear-gradient(to left, #e1007e, #6e368c);
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-brand:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-brand:active { transform: translateY(0); }
+
+    /* ── Hero ── */
+    .hero-bg {
+      background-image: url('https://www.figma.com/api/mcp/asset/e58fe49c-f91f-4e42-aeae-3aa48182c528');
+      background-size: cover;
+      background-position: center top;
+    }
+    .hero-overlay {
+      background: linear-gradient(to bottom, #fcfcfc 0%, #fcfcfc 20%, rgba(248,248,248,0) 100%);
+    }
+
+    /* ── Watermark ── */
+    .watermark {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.06;
+      overflow: hidden;
+      border-radius: 50%;
+    }
+    .watermark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: rotate(10.35deg) scaleY(-1);
+    }
+
+    /* ── Sticky header shadow ── */
+    #main-header { transition: box-shadow 0.25s; }
+    #main-header.scrolled { box-shadow: 0 1px 16px rgba(0,0,0,0.09); }
+
+    /* ── Scroll-reveal animations ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.08s; }
+    .reveal-d2 { transition-delay: 0.16s; }
+    .reveal-d3 { transition-delay: 0.24s; }
+    .reveal-d4 { transition-delay: 0.32s; }
+    .reveal-d5 { transition-delay: 0.40s; }
+
+    /* ── Modal ── */
+    #modal-acceso {
+      position: fixed; inset: 0; z-index: 100;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(11,11,11,0.55);
+      backdrop-filter: blur(4px);
+      padding: 1rem;
+    }
+    #modal-acceso.open { display: flex; }
+    #modal-acceso .modal-box {
+      background: #fcfcfc;
+      border-radius: 1.25rem;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      animation: modal-in 0.3s ease;
+    }
+    @keyframes modal-in {
+      from { opacity: 0; transform: translateY(20px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    #modal-acceso input, #modal-acceso select {
+      width: 100%;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      background: #fff;
+    }
+    #modal-acceso input:focus, #modal-acceso select:focus { border-color: #75439b; }
+
+    /* ── Nav mobile ── */
+    #mobile-nav {
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+      padding-bottom: 0.5rem;
+    }
+    #mobile-nav.open { display: flex; }
+    #mobile-nav a {
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      color: #0b0b0b;
+      font-size: 1rem;
+      transition: background 0.15s;
+    }
+    #mobile-nav a:hover { background: #f3f5ff; }
+
+    /* ── Card hover ── */
+    .feature-card { transition: box-shadow 0.2s, transform 0.2s; }
+    .feature-card:hover { box-shadow: 0 4px 24px rgba(117,67,155,0.10); transform: translateY(-2px); }
+
+    /* ── List item icon ── */
+    .check-item { display: flex; align-items: center; gap: 0.25rem; min-height: 25px; }
+  </style>
+</head>
+<body class="bg-surface text-[#0b0b0b] antialiased overflow-x-hidden">
+
+<!-- ═══════════════════ MODAL SOLICITAR ACCESO ═══════════════════ -->
+<div id="modal-acceso" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <!-- Close -->
+    <button id="modal-close" aria-label="Cerrar"
+      class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f3f5ff] text-[#393939] transition-colors text-xl leading-none">
+      ×
+    </button>
+
+    <!-- Form state -->
+    <div id="form-state">
+      <h2 id="modal-title" class="text-2xl font-semibold text-[#0b0b0b] mb-1">Solicitar acceso</h2>
+      <p class="text-sm text-[#393939] mb-6">Te contactaremos a la brevedad para comenzar.</p>
+
+      <form id="acceso-form" class="flex flex-col gap-4" novalidate>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-[#0b0b0b]">Nombre completo *</label>
+          <input type="text" name="nombre" placeholder="Dr. Juan Pérez" required />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-[#0b0b0b]">Correo electrónico *</label>
+          <input type="email" name="email" placeholder="juan@clinica.com" required />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-[#0b0b0b]">Institución / Clínica</label>
+          <input type="text" name="institucion" placeholder="Clínica San Rafael" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-[#0b0b0b]">Especialidad</label>
+          <select name="especialidad">
+            <option value="">Selecciona tu especialidad</option>
+            <option>Medicina general</option>
+            <option>Cardiología</option>
+            <option>Endocrinología</option>
+            <option>Neurología</option>
+            <option>Ortopedia</option>
+            <option>Oncología</option>
+            <option>Otra</option>
+          </select>
+        </div>
+        <button type="submit"
+          class="btn-brand mt-2 h-[56px] w-full rounded-full text-[#fcfcfc] text-lg font-normal">
+          Solicitar acceso
+        </button>
+      </form>
+    </div>
+
+    <!-- Success state -->
+    <div id="success-state" class="hidden text-center py-4">
+      <div class="w-16 h-16 rounded-full bg-[#f3f5ff] flex items-center justify-center mx-auto mb-4">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M8 16.5l5.5 5.5 10.5-11" stroke="#75439b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-semibold text-[#0b0b0b] mb-2">¡Recibido!</h3>
+      <p class="text-[#393939]">Te contactaremos pronto para darte acceso a Secuence.</p>
+      <button id="modal-done"
+        class="btn-brand mt-6 h-[48px] w-full rounded-full text-[#fcfcfc] text-base font-normal">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header id="main-header" class="bg-surface sticky top-0 z-50 flex flex-wrap items-center justify-between gap-y-1 px-4 py-4 sm:px-6 md:px-10 w-full">
+  <a href="#" class="flex items-center">
+    <img src="assets/logo.svg" alt="Secuence" class="h-[35px] w-auto" />
+  </a>
+
+  <!-- Desktop nav -->
+  <nav class="hidden sm:flex items-center gap-4">
+    <a href="#protocolo"
+      class="px-4 py-3 rounded-full text-[#0b0b0b] text-base hover:bg-[#f3f5ff] transition-colors">
+      Producto
+    </a>
+    <button onclick="openModal()"
+      class="px-4 py-3 rounded-full text-[#0b0b0b] text-base hover:bg-[#f3f5ff] transition-colors cursor-pointer">
+      Solicitar acceso
+    </button>
+  </nav>
+
+  <!-- Hamburger (mobile) -->
+  <button id="nav-toggle" aria-label="Menú" aria-expanded="false"
+    class="sm:hidden flex flex-col gap-[5px] p-2 rounded-lg hover:bg-[#f3f5ff] transition-colors">
+    <span class="w-5 h-0.5 bg-[#0b0b0b] block transition-all"></span>
+    <span class="w-5 h-0.5 bg-[#0b0b0b] block transition-all"></span>
+    <span class="w-5 h-0.5 bg-[#0b0b0b] block transition-all"></span>
+  </button>
+
+  <!-- Mobile nav -->
+  <nav id="mobile-nav">
+    <a href="#protocolo" onclick="closeMobileNav()">Producto</a>
+    <button onclick="openModal(); closeMobileNav();"
+      class="text-left px-4 py-3 rounded-xl text-[#0b0b0b] text-base hover:bg-[#f3f5ff] transition-colors w-full cursor-pointer">
+      Solicitar acceso
+    </button>
+  </nav>
+</header>
+
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="relative min-h-[400px] md:h-[535px] overflow-hidden px-4 pt-12 pb-16 sm:px-6 md:px-10 lg:px-20 md:py-20 flex items-start hero-bg" id="producto">
+  <div class="hero-overlay absolute inset-0 pointer-events-none"></div>
+  <div class="relative z-10 flex flex-col items-center gap-8 md:gap-10 w-full text-center reveal">
+    <div class="flex flex-col gap-4 w-full">
+      <h1 class="text-[36px] sm:text-[44px] md:text-[56px] font-semibold leading-tight md:leading-[68px] tracking-[-1.68px] text-[#0b0b0b]">
+        ¡Porque la salud no termina en la consulta!
+      </h1>
+      <p class="text-lg sm:text-xl md:text-[24px] leading-[30px] tracking-[-0.72px] text-[#393939] max-w-2xl mx-auto">
+        <strong class="font-semibold text-[#0b0b0b]">Automatice el seguimiento postconsulta</strong>
+        &nbsp;y garantice el acompañamiento de sus pacientes en sus procesos de recuperación.
+      </p>
+    </div>
+    <button onclick="openModal()"
+      class="btn-brand inline-flex items-center justify-center h-[56px] md:h-[68px] w-full sm:w-auto sm:min-w-[280px] md:w-[416px] rounded-full text-[#fcfcfc] text-lg md:text-2xl font-normal cursor-pointer">
+      Solicitar acceso
+    </button>
+  </div>
+</section>
+
+
+<!-- ═══════════════════ MAYOR IMPACTO ═══════════════════ -->
+<section class="bg-surface-brand px-4 py-12 sm:px-6 md:px-10 lg:px-20 md:py-20 flex flex-wrap gap-4 min-h-auto md:min-h-[611px] overflow-hidden">
+  <!-- Text column -->
+  <div class="flex-1 min-w-[280px] flex flex-col gap-4 reveal">
+    <h2 class="text-[36px] md:text-[44px] font-semibold leading-tight md:leading-[54px] tracking-[-1.32px] text-[#0b0b0b]">
+      Mayor impacto
+    </h2>
+    <p class="text-xl md:text-2xl font-semibold leading-[30px] tracking-[-0.72px] text-brand">
+      Para centros de salud y para médicos
+    </p>
+    <p class="text-sm leading-5 tracking-tight text-[#0b0b0b]">
+      Centros de salud y médicos que acompañan mejor a sus pacientes generan:
+    </p>
+    <ul class="flex flex-col gap-3">
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Mayor incremento de la tasa de retorno y referidos.</span>
+      </li>
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Más confianza, más recomendaciones boca a boca.</span>
+      </li>
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Mayor ticket de venta promedio por paciente</span>
+      </li>
+    </ul>
+    <p class="text-sm font-semibold leading-4 text-[#0b0b0b]">Con Secuence</p>
+    <ul class="flex flex-col gap-3">
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Incremente la fidelización al mantener contacto activo</span>
+      </li>
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Detecte oportunidades de seguimiento clínico legítimo</span>
+      </li>
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Reduzca abandono de tratamiento</span>
+      </li>
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Disminuya urgencias evitables</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Image column -->
+  <div class="flex-1 min-w-[280px] relative rounded-lg overflow-hidden shadow-[0px_2px_5px_rgba(0,0,0,0.1),0px_8px_8px_rgba(0,0,0,0.09),0px_19px_11px_rgba(0,0,0,0.05),0px_34px_14px_rgba(0,0,0,0.01)] reveal reveal-d1"
+       style="min-height: 320px;">
+    <img
+      src="https://www.figma.com/api/mcp/asset/9a6acf53-6572-4162-86b9-f29003115774"
+      alt="Médicos con paciente"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+  </div>
+</section>
+
+
+<!-- ═══════════════════ CADA PACIENTE QUE CONFÍA ═══════════════════ -->
+<section class="bg-surface relative overflow-hidden px-4 py-12 sm:px-6 md:px-10 lg:px-20 md:py-20 flex flex-col items-center gap-10 md:gap-14">
+  <div class="watermark" style="width:921px;height:921px;left:calc(50% - 722px);top:-24px;">
+    <img src="https://www.figma.com/api/mcp/asset/6a3ea179-2b57-43a9-bd8a-758e7e9035be" alt="" />
+  </div>
+
+  <div class="relative text-center flex flex-col gap-4 w-full reveal">
+    <h2 class="text-[36px] md:text-[44px] font-semibold leading-tight md:leading-[54px] tracking-[-1.32px] text-[#0b0b0b]">
+      Cada paciente que confía, vuelve.
+    </h2>
+    <p class="text-xl md:text-2xl font-semibold leading-[30px] tracking-[-0.72px] text-brand">
+      Cada paciente que vuelve, genera valor sostenible.
+    </p>
+  </div>
+
+  <div class="relative grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 w-full max-w-[1280px]">
+    <div class="flex flex-col items-center gap-3 text-center reveal reveal-d1 feature-card rounded-xl p-3">
+      <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+        <img src="https://www.figma.com/api/mcp/asset/3e911de6-6ee8-476a-bc3b-3bf1ebb3b9a9" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+      </div>
+      <p class="text-sm md:text-[20px] md:leading-6 text-[#393939] tracking-[-0.6px]">Incremente la fidelización al mantener contacto activo</p>
+    </div>
+    <div class="flex flex-col items-center gap-3 text-center reveal reveal-d2 feature-card rounded-xl p-3">
+      <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+        <img src="https://www.figma.com/api/mcp/asset/9533ef3c-3940-4c25-8fa6-e296bb049dd2" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+      </div>
+      <p class="text-sm md:text-[20px] md:leading-6 text-[#393939] tracking-[-0.6px]">Alertas inteligentes basadas en síntomas</p>
+    </div>
+    <div class="flex flex-col items-center gap-3 text-center reveal reveal-d3 feature-card rounded-xl p-3">
+      <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+        <img src="https://www.figma.com/api/mcp/asset/348076e0-cd59-40e2-8078-1f60ea99fb5e" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+      </div>
+      <p class="text-sm md:text-[20px] md:leading-6 text-[#393939] tracking-[-0.6px]">Reportes claros de evolución</p>
+    </div>
+    <div class="flex flex-col items-center gap-3 text-center reveal reveal-d4 feature-card rounded-xl p-3">
+      <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+        <img src="https://www.figma.com/api/mcp/asset/0cf8d3a1-b199-4a63-9286-7701d2675da0" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+      </div>
+      <p class="text-sm md:text-[20px] md:leading-6 text-[#393939] tracking-[-0.6px]">Evalúe la calidad de su servicio prestado</p>
+    </div>
+    <div class="flex flex-col items-center gap-3 text-center reveal reveal-d5 feature-card rounded-xl p-3 col-span-2 sm:col-span-1">
+      <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+        <img src="https://www.figma.com/api/mcp/asset/594c43ed-7cf3-463d-aea1-8502ca4fd625" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+      </div>
+      <p class="text-sm md:text-[20px] md:leading-6 text-[#393939] tracking-[-0.6px]">Recomendaciones accionables</p>
+    </div>
+  </div>
+
+  <button onclick="openModal()"
+    class="relative btn-brand inline-flex items-center justify-center h-[56px] md:h-[68px] w-full sm:w-auto sm:min-w-[280px] md:w-[416px] rounded-full text-[#fcfcfc] text-lg md:text-2xl font-normal cursor-pointer reveal">
+    Solicitar acceso
+  </button>
+</section>
+
+
+<!-- ═══════════════════ PARA EL MÉDICO ═══════════════════ -->
+<section class="bg-surface-brand px-4 py-12 sm:px-6 md:px-10 lg:px-20 md:py-20 flex flex-wrap gap-4 overflow-hidden">
+  <!-- Image column -->
+  <div class="flex-1 min-w-[280px] relative rounded-lg overflow-hidden reveal" style="min-height:280px;">
+    <div class="absolute inset-0 bg-white rounded-lg"></div>
+    <img
+      src="https://www.figma.com/api/mcp/asset/9354ac7c-75ff-4f41-b639-a3f10c8b5861"
+      alt="Médico"
+      class="absolute inset-0 w-full h-full object-cover rounded-lg"
+    />
+  </div>
+
+  <!-- Text column -->
+  <div class="flex-1 min-w-[280px] flex flex-col gap-4 md:pl-6 reveal reveal-d1">
+    <h2 class="text-[36px] md:text-[44px] font-semibold leading-tight md:leading-[54px] tracking-[-1.32px] text-[#0b0b0b]">
+      Para el médico
+    </h2>
+    <p class="text-xl md:text-2xl font-semibold leading-[30px] tracking-[-0.72px] text-brand">
+      Posterior a la consulta, el médico puede:
+    </p>
+    <ul class="flex flex-col gap-3">
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Saber si el paciente está mejorando.</span>
+      </li>
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Detectar complicaciones a tiempo.</span>
+      </li>
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Asegurar adherencia al tratamiento.</span>
+      </li>
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">No invertir horas adicionales en WhatsApp o llamadas.</span>
+      </li>
+      <li class="check-item">
+        <img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" />
+        <span class="text-sm leading-4 text-[#393939]">Mantener la calidad humana del cuidado.</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ═══════════════════ EXPERIENCIA DEL PACIENTE ═══════════════════ -->
+<section class="bg-surface relative overflow-hidden px-4 py-12 sm:px-6 md:px-10 lg:px-20 md:py-20 flex flex-col items-center gap-10 md:gap-14">
+  <div class="watermark" style="width:921px;height:921px;left:calc(50% + 720px);top:104px;">
+    <img src="https://www.figma.com/api/mcp/asset/df544fe3-a60c-4cc9-82f3-42ee193c1bee" alt="" />
+  </div>
+
+  <div class="relative text-center flex flex-col gap-4 w-full reveal">
+    <h2 class="text-[36px] md:text-[44px] font-semibold leading-tight md:leading-[54px] tracking-[-1.32px] text-[#0b0b0b]">
+      Experiencia del paciente
+    </h2>
+    <p class="text-xl md:text-2xl font-semibold leading-[30px] tracking-[-0.72px] text-brand">
+      Hoy el paciente sale de consulta con dudas
+    </p>
+  </div>
+
+  <p class="relative text-base md:text-xl leading-6 text-[#393939] text-center tracking-[-0.6px] max-w-3xl reveal">
+    Con Secuence el paciente recibe recordatorios claros, reporta su evolución, se siente acompañado y sobre todo,
+    <strong class="font-semibold">reduce las probabilidades de complicaciones.</strong>
+  </p>
+
+  <div class="relative grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-10 w-full max-w-[1280px]">
+    <div class="flex flex-col items-center gap-3 text-center reveal reveal-d1 feature-card rounded-xl p-4">
+      <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+        <img src="https://www.figma.com/api/mcp/asset/503b4521-f075-41e3-8bb8-d0a7d1ae6546" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+      </div>
+      <p class="text-base md:text-[20px] md:leading-6 text-[#393939] tracking-[-0.6px]">Incremente la confianza del paciente</p>
+    </div>
+    <div class="flex flex-col items-center gap-3 text-center reveal reveal-d2 feature-card rounded-xl p-4">
+      <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+        <img src="https://www.figma.com/api/mcp/asset/5bd8581f-9523-4a0d-ab97-6878337cf669" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+      </div>
+      <p class="text-base md:text-[20px] md:leading-6 text-[#393939] tracking-[-0.6px]">Mejore el cumplimiento del tratamiento</p>
+    </div>
+    <div class="flex flex-col items-center gap-3 text-center reveal reveal-d3 feature-card rounded-xl p-4">
+      <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+        <img src="https://www.figma.com/api/mcp/asset/0cf8d3a1-b199-4a63-9286-7701d2675da0" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+      </div>
+      <p class="text-base md:text-[20px] md:leading-6 text-[#393939] tracking-[-0.6px]">Incremente la satisfacción del servicio prestado</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════ PROTOCOLO CON BASES CIENTÍFICAS ═══════════════════ -->
+<section id="protocolo" class="bg-surface-brand p-2 md:p-4">
+  <div class="relative rounded-xl overflow-hidden flex flex-col items-center gap-10 md:gap-14 py-16 md:py-20">
+    <div class="absolute inset-0 pointer-events-none rounded-xl">
+      <img
+        src="https://www.figma.com/api/mcp/asset/d4338c6c-2a86-4780-8ede-9b71d5287701"
+        alt=""
+        class="absolute inset-0 w-full h-full object-cover rounded-xl"
+      />
+      <div class="absolute inset-0 bg-[rgba(11,11,11,0.72)] rounded-xl"></div>
+    </div>
+
+    <div class="relative text-[#fcfcfc] text-center flex flex-col gap-4 w-full px-4 sm:px-6 md:px-10 lg:px-20 reveal">
+      <h2 class="text-[32px] md:text-[44px] font-semibold leading-tight md:leading-[54px] tracking-[-1.32px]">
+        Protocolo con bases científicas
+      </h2>
+      <p class="text-base md:text-xl leading-6 text-[#fcfcfc] tracking-[-0.6px] max-w-3xl mx-auto">
+        Los <strong>protocolos</strong> aplicados están
+        <strong>fundamentados en las principales organizaciones de salud a nivel mundial</strong>
+        <br class="hidden md:block" />
+        <strong>(OMS, OPS, Care Continuum, CDC, JAMA, ADA, AHA)</strong>
+      </p>
+    </div>
+    <button onclick="openModal()"
+      class="relative btn-brand inline-flex items-center justify-center h-[56px] md:h-[68px] w-[calc(100%-2rem)] sm:w-auto sm:min-w-[280px] md:w-[416px] rounded-full text-[#fcfcfc] text-lg md:text-2xl font-normal cursor-pointer reveal">
+      Solicitar acceso
+    </button>
+  </div>
+</section>
+
+
+<!-- ═══════════════════ CARACTERÍSTICAS DEL PRODUCTO ═══════════════════ -->
+<section class="bg-surface px-4 py-12 sm:px-6 md:px-10 lg:px-20 md:py-20 flex flex-col items-center gap-10 md:gap-14" id="caracteristicas">
+  <div class="w-full max-w-[1280px] reveal">
+    <h2 class="text-[36px] md:text-[44px] font-semibold leading-tight md:leading-[54px] tracking-[-1.32px] text-[#0b0b0b]">
+      Características del producto
+    </h2>
+  </div>
+
+  <!-- Row 1 -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 w-full max-w-[1280px]">
+    <div class="flex flex-col gap-2 feature-card rounded-xl p-1 reveal reveal-d1">
+      <div class="flex flex-col gap-3 items-start">
+        <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+          <img src="https://www.figma.com/api/mcp/asset/099fa797-49af-400f-a10d-60cb471b5cc6" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+        </div>
+        <p class="text-[22px] md:text-[28px] font-semibold leading-snug md:leading-[34px] tracking-[-0.84px] text-brand">Seguimiento automatizado inteligente</p>
+      </div>
+      <ul class="flex flex-col gap-2">
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Intervalos configurables personalizados</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Preguntas adaptadas por especialidad</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Clasificación automática de riesgo</span></li>
+      </ul>
+    </div>
+
+    <div class="flex flex-col gap-2 feature-card rounded-xl p-1 reveal reveal-d2">
+      <div class="flex flex-col gap-3 items-start">
+        <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+          <img src="https://www.figma.com/api/mcp/asset/9533ef3c-3940-4c25-8fa6-e296bb049dd2" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+        </div>
+        <p class="text-[22px] md:text-[28px] font-semibold leading-snug md:leading-[34px] tracking-[-0.84px] text-brand">Sistema de alertas</p>
+      </div>
+      <ul class="flex flex-col gap-2">
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Detección de síntomas de alerta</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Clasificación por severidad</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Notificaciones en dashboard</span></li>
+      </ul>
+    </div>
+
+    <div class="flex flex-col gap-2 feature-card rounded-xl p-1 reveal reveal-d3">
+      <div class="flex flex-col gap-3 items-start">
+        <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+          <img src="https://www.figma.com/api/mcp/asset/57435ded-ed6e-43b3-ae80-b3d49cebb446" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+        </div>
+        <p class="text-[22px] md:text-[28px] font-semibold leading-snug md:leading-[34px] tracking-[-0.84px] text-brand">Métricas por médico</p>
+      </div>
+      <ul class="flex flex-col gap-2">
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Pacientes activos</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Tasa de adherencia</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Alertas gestionadas</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Tiempo de respuesta</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Seguimientos completados</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 w-full max-w-[1280px]">
+    <div class="flex flex-col gap-2 feature-card rounded-xl p-1 reveal reveal-d1">
+      <div class="flex flex-col gap-3 items-start">
+        <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+          <img src="https://www.figma.com/api/mcp/asset/4260f0e7-5bfe-4ad7-bbef-b0b44c69c977" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+        </div>
+        <p class="text-[22px] md:text-[28px] font-semibold leading-snug md:leading-[34px] tracking-[-0.84px] text-brand">Métricas institucionales</p>
+      </div>
+      <ul class="flex flex-col gap-2">
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Pacientes activos</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Tasa de adherencia</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Alertas gestionadas</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Tiempo de respuesta</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Seguimientos completados</span></li>
+      </ul>
+    </div>
+
+    <div class="flex flex-col gap-2 feature-card rounded-xl p-1 reveal reveal-d2">
+      <div class="flex flex-col gap-3 items-start">
+        <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+          <img src="https://www.figma.com/api/mcp/asset/b523b116-3b5e-408f-8a49-f3dbd1f269c5" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+        </div>
+        <p class="text-[22px] md:text-[28px] font-semibold leading-snug md:leading-[34px] tracking-[-0.84px] text-brand">Generación de reportes</p>
+      </div>
+      <ul class="flex flex-col gap-2">
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Evolución clínica estructurada</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Descarga en PDF</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Historial auditado</span></li>
+      </ul>
+    </div>
+
+    <div class="flex flex-col gap-2 feature-card rounded-xl p-1 reveal reveal-d3">
+      <div class="flex flex-col gap-3 items-start">
+        <div class="bg-surface-brand rounded-full w-16 h-16 md:w-20 md:h-20 shrink-0 flex items-center justify-center">
+          <img src="https://www.figma.com/api/mcp/asset/41b6ec17-254f-471c-b21a-6f71fed9fd6a" alt="" class="w-9 h-9 md:w-11 md:h-11 shrink-0 object-contain" />
+        </div>
+        <p class="text-[22px] md:text-[28px] font-semibold leading-snug md:leading-[34px] tracking-[-0.84px] text-brand">Gobernanza por roles</p>
+      </div>
+      <ul class="flex flex-col gap-2">
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Rol Administrador</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Rol Médico</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Rol Asistente</span></li>
+        <li class="check-item"><img src="https://www.figma.com/api/mcp/asset/10e0bd8f-201d-4bb8-9351-28a3c8ef622b" alt="" class="w-6 h-6 shrink-0 object-contain" /><span class="text-sm leading-4 text-[#393939]">Control granular de permisos</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════ ¿POR QUÉ ADQUIRIR SECUENCE? ═══════════════════ -->
+<section class="bg-surface relative overflow-hidden px-4 py-12 sm:px-6 md:px-10 lg:px-20 md:py-20 flex flex-col items-center gap-10 md:gap-14">
+  <div class="watermark" style="width:921px;height:921px;left:calc(50% - 720px);top:154px;">
+    <img src="https://www.figma.com/api/mcp/asset/0d9ac837-795e-4e0b-ace7-9b7cbd523526" alt="" />
+  </div>
+
+  <div class="relative text-center flex flex-col gap-4 w-full max-w-[1280px] reveal">
+    <p class="text-xl md:text-2xl font-semibold leading-[30px] tracking-[-0.72px] text-brand">
+      ¿Por qué adquirir Secuence?
+    </p>
+    <div class="text-[32px] md:text-[44px] font-semibold leading-tight md:leading-[54px] tracking-[-1.32px] text-[#0b0b0b]">
+      <p>Porque la salud no se define en 15 minutos.</p>
+      <p>Se define en lo que pasa después.</p>
+    </div>
+    <p class="text-xl md:text-2xl font-semibold leading-[30px] tracking-[-0.72px] text-brand">
+      Secuence convierte el "después" en una ventaja competitiva.
+    </p>
+  </div>
+
+  <button onclick="openModal()"
+    class="relative btn-brand inline-flex items-center justify-center h-[56px] md:h-[68px] w-full sm:w-auto sm:min-w-[280px] md:w-[416px] rounded-full text-[#fcfcfc] text-lg md:text-2xl font-normal cursor-pointer reveal">
+    Solicitar acceso
+  </button>
+</section>
+
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="bg-surface-brand px-4 py-10 sm:px-6 md:px-10 lg:px-20 md:py-20">
+  <div class="flex flex-wrap items-center justify-between gap-6 w-full max-w-[1280px] mx-auto">
+    <!-- Logo -->
+    <div class="flex items-center">
+      <a href="#">
+        <img src="assets/logo.svg" alt="Secuence" class="h-10 w-auto" />
+      </a>
+    </div>
+
+    <!-- Links -->
+    <nav class="flex flex-wrap items-center justify-center gap-2 md:gap-4">
+      <a href="#protocolo"
+        class="px-4 py-3 rounded-full text-[#0b0b0b] text-sm md:text-base hover:bg-white/50 transition-colors">
+        Producto
+      </a>
+      <button onclick="openModal()"
+        class="px-4 py-3 rounded-full text-[#0b0b0b] text-sm md:text-base hover:bg-white/50 transition-colors cursor-pointer">
+        Solicitar acceso
+      </button>
+      <a href="https://www.linkedin.com/company/secuence-care" target="_blank" rel="noopener" aria-label="LinkedIn"
+        class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/50 transition-colors">
+        <img src="https://www.figma.com/api/mcp/asset/a529509c-c147-48cf-8ad9-c92e7af5f215" alt="LinkedIn" class="w-6 h-6" />
+      </a>
+    </nav>
+
+    <!-- Copyright -->
+    <div class="flex items-center">
+      <p class="text-sm leading-4 text-[#0b0b0b] tracking-tight whitespace-nowrap">
+        Secuence 2026. Todos los derechos reservados
+      </p>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<script>
+  /* ── Sticky header shadow ── */
+  const header = document.getElementById('main-header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 10);
+  }, { passive: true });
+
+  /* ── Mobile nav toggle ── */
+  const navToggle = document.getElementById('nav-toggle');
+  const mobileNav = document.getElementById('mobile-nav');
+  navToggle.addEventListener('click', () => {
+    const isOpen = mobileNav.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+  function closeMobileNav() {
+    mobileNav.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }
+
+  /* ── Solicitar acceso ── */
+  function openModal() {
+    window.open('https://bit.ly/4rmrTlr', '_blank', 'noopener,noreferrer');
+    closeMobileNav();
+  }
+
+  /* ── Scroll-reveal (IntersectionObserver) ── */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+
+</body>
+</html>
